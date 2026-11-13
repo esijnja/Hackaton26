@@ -71,7 +71,13 @@ lerobot-calibrate --robot.type=so101_leader --robot.port=/dev/ttyACM1 --robot.id
 ## Teleoperate the leader and follower
 
 ``` bash
-lerobot-teleoperate --robot.type=so101_follower --robot.port=/dev/ttyACM1 --robot.id=hackaton_follower_arm --teleop.type=so101_leader --teleop.port=/dev/ttyACM0 --teleop.id=hackaton_leader_arm
+lerobot-teleoperate \
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=hackaton_follower_arm \
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM0 \
+    --teleop.id=hackaton_leader_arm
 ```
 
 Teleoperation with camera:
@@ -81,11 +87,11 @@ lerobot-teleoperate \
     --robot.type=so101_follower \
     --robot.port=/dev/ttyACM1 \
     --robot.id=hackaton_follower_arm \
-    --robot.cameras="{ top: {type: opencv, index_or_path: 0, width: 640, height: 360, fps: 30}, wrist: {type: opencv, index_or_path: 2, width: 640, height: 480, fps: 30} }" \
+    --robot.cameras="{ top: {type: opencv, index_or_path: 2, width: 640, height: 360, fps: 30}, wrist: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30} }" \
     --teleop.type=so101_leader \
     --teleop.port=/dev/ttyACM0 \
     --teleop.id=hackaton_leader_arm \
-    --display_data=true
+    --display_data=false
 ```
 
 ## Recording
@@ -95,11 +101,11 @@ lerobot-record \
     --robot.type=so101_follower \
     --robot.port=/dev/ttyACM1 \
     --robot.id=hackaton_follower_arm \
-    --robot.cameras="{ top: {type: opencv, index_or_path: 0, width: 640, height: 360, fps: 30}, wrist: {type: opencv, index_or_path: 2, width: 640, height: 480, fps: 30} }" \
+    --robot.cameras="{ top: { top: {type: opencv, index_or_path: 2, width: 640, height: 360, fps: 30}, wrist: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30} }" \
     --teleop.type=so101_leader \
     --teleop.port=/dev/ttyACM0 \
     --teleop.id=hackaton_leader_arm \
-    --dataset.num_episodes=30 \
+    --dataset.num_episodes=15 \
     --dataset.single_task="put the orange brick in a yellow form" \
     --dataset.streaming_encoding=true \
     --dataset.root=${HOME}/hackaton26/recordings_data/so101_dataset_01 \
@@ -142,6 +148,22 @@ lerobot-record \
     --display_data=false
 ```
 
+``` bash
+lerobot-record \
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=hackaton_follower_arm \
+    --robot.cameras="{ top: {type: opencv, index_or_path: 2, width: 640, height: 360, fps: 30}, wrist: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30} }" \
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM0 \
+    --teleop.id=hackaton_leader_arm \
+    --dataset.repo_id=${HF_USER}/hackaton26_test \
+    --dataset.num_episodes=15 \
+    --dataset.single_task="put the orange brick in a yellow form" \
+    --dataset.streaming_encoding=true \
+    --display_data=false
+```
+
 ## Training
 
 copy data to BB laptop
@@ -152,7 +174,7 @@ scp -r lerobot@192.168.68.75:/home/lerobot/.cache/huggingface/lerobot/esijnja/ ~
 
 ``` bash
 lerobot-train \
-    --dataset.repo_id=${HF_USER}/hackaton26_test_20261107_182356 \
+    --dataset.repo_id=${HF_USER}/hackaton26_test_20261109_213455 \
     --policy.type=act \
     --output_dir=outputs/train/act_so101_test \
     --job_name=act_so101_test \
@@ -171,7 +193,19 @@ lerobot-rollout \
     --robot.type=so101_follower \
     --robot.port=/dev/ttyACM1 \
     --robot.id=hackaton_follower_arm \
-    --robot.cameras="{ top: {type: opencv, index_or_path: 1, width: 640, height: 360, fps: 30} }" \
+    --robot.cameras="{ top: {type: opencv, index_or_path: 2, width: 640, height: 360, fps: 30}, wrist: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30} }" \
+    --task="put the orange brick in a yellow form" \
+    --duration=60
+```
+
+``` bash
+lerobot-rollout \
+    --strategy.type=base \
+    --policy.path=${HF_USER}/Hackaton_test_5_20261110_205435 \
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=hackaton_follower_arm \
+    --robot.cameras="{ top: {type: opencv, index_or_path: 2, width: 640, height: 360, fps: 30}, wrist: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30} }" \
     --task="put the orange brick in a yellow form" \
     --duration=60
 ```
