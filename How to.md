@@ -209,3 +209,5 @@ lerobot-rollout \
     --task="put the orange brick in a yellow form" \
     --duration=60
 ```
+
+
